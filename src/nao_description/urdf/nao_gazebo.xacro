@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<!-- ============================================================
+  nao_description/urdf/nao_gazebo.xacro
+  REMPLACE ton fichier existant.
+  Ajout : capteurs caméra top + bottom pour Gazebo Harmonic.
+============================================================ -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:macro name="nao_gazebo" params="ros2_control_params">
+
+  <!-- Base link -->
+  <gazebo reference="base_link">
+    <selfCollide>false</selfCollide>
+    <gravity>true</gravity>
+  </gazebo>
+
+  <!-- Friction pieds -->
+  <gazebo reference="l_sole">
+    <mu1>1.0</mu1><mu2>1.0</mu2>
+    <kp>100000</kp><kd>1.0</kd>
+    <selfCollide>false</selfCollide>
+    <gravity>true</gravity>
+  </gazebo>
+  <gazebo reference="r_sole">
+    <mu1>1.0</mu1><mu2>1.0</mu2>
+    <kp>100000</kp><kd>1.0</kd>
+    <selfCollide>false</selfCollide>
+    <gravity>true</gravity>
+  </gazebo>
+
+  <!-- Contact sol pied gauche -->
+  <gazebo reference="l_sole">
+    <collision>
+      <surface>
+        <friction>
+          <ode><mu>1.4</mu><mu2>1.4</mu2><fdir1>1 0 0</fdir1><slip1>0.0</slip1><slip2>0.0</slip2></ode>
+        </friction>
+        <contact>
+          <ode><kp>1000000.0</kp><kd>100.0</kd><min_depth>0.001</min_depth><max_vel>0.2</max_vel></ode>
+        </contact>
+      </surface>
+    </collision>
+    <visual><geometry><box><size>0.12 0.065 0.02</size></box></geometry></visual>
+  </gazebo>
+
+  <!-- Contact sol pied droit -->
+  <gazebo reference="r_sole">
+    <collision>
+      <surface>
+        <friction>
+          <ode><mu>1.4</mu><mu2>1.4</mu2><fdir1>1 0 0</fdir1><slip1>0.0</slip1><slip2>0.0</slip2></ode>
+        </friction>
+        <contact>
+          <ode><kp>1000000.0</kp><kd>100.0</kd><min_depth>0.001</min_depth><max_vel>0.2</max_vel></ode>
+        </contact>
+      </surface>
+    </collision>
+    <visual><geometry><box><size>0.12 0.065 0.02</size></box></geometry></visual>
+  </gazebo>
+
+  <!-- CAPTEUR CAMÉRA HAUTE (CameraTop_frame)
+       Topic Gazebo : /nao/CameraTop/image_raw
+       Bridgé vers ROS dans gazebo.launch.py -->
+  <gazebo reference="CameraTop_frame">
+    <sensor name="camera_top" type="camera">
+      <always_on>true</always_on>
+      <update_rate>15</update_rate>
+      <topic>/nao/CameraTop/image_raw</topic>
+      <camera name="cam_top">
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip><near>0.1</near><far>20</far></clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.005</stddev>
+        </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+
+  <!-- CAPTEUR CAMÉRA BASSE (CameraBottom_frame)
+       Topic Gazebo : /nao/CameraBottom/image_raw
+       Bridgé vers ROS dans gazebo.launch.py -->
+  <gazebo reference="CameraBottom_frame">
+    <sensor name="camera_bottom" type="camera">
+      <always_on>true</always_on>
+      <update_rate>15</update_rate>
+      <topic>/nao/CameraBottom/image_raw</topic>
+      <camera name="cam_bottom">
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip><near>0.05</near><far>10</far></clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.005</stddev>
+        </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+
+  <!-- Plugin ros2_control pour Gazebo Harmonic -->
+  <gazebo>
+    <plugin filename="gz_ros2_control-system"
+            name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>${ros2_control_params}</parameters>
+      <ros>
+        <remapping>~/robot_description:=robot_description</remapping>
+      </ros>
+    </plugin>
+  </gazebo>
+
+</xacro:macro>
+</robot>

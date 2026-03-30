@@ -1,0 +1,229 @@
+<?xml version="1.0" ?>
+<sdf version="1.10">
+  <world name="default">
+
+    <!-- Tes plugins originaux — inchangés -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+
+    <!-- AJOUT : plugin capteurs (obligatoire pour les caméras NAO) -->
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+
+    <!-- Ta gravité originale — inchangée -->
+    <gravity>0 0 -9.81</gravity>
+
+    <!-- Ta physique originale — inchangée (nao_physics, dartsim, 1kHz) -->
+    <physics name="nao_physics" type="dartsim">
+      <max_step_size>0.001</max_step_size>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Ta lumière originale — inchangée -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- AJOUT : lumière ambiante pour mieux voir les couleurs rouge/bleu -->
+    <light name="ambient_light" type="point">
+      <pose>0 0 3 0 0 0</pose>
+      <diffuse>0.4 0.4 0.4 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.02</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- Ton sol original — inchangé (taille 100x100, friction 1.1) -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.1</mu>
+                <mu2>1.1</mu2>
+                <fdir1>1 0 0</fdir1>
+                <slip1>0.0</slip1>
+                <slip2>0.0</slip2>
+              </ode>
+            </friction>
+            <contact>
+              <ode>
+                <kp>1000000.0</kp>
+                <kd>10.0</kd>
+                <max_vel>0.2</max_vel>
+                <min_depth>0.001</min_depth>
+              </ode>
+            </contact>
+            <bounce>
+              <restitution_coefficient>0.0</restitution_coefficient>
+              <threshold>1000000.0</threshold>
+            </bounce>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- AJOUT : boîte ROUGE à ramasser (devant le robot) -->
+    <model name="red_box">
+      <pose>0.50 0.10 0.041 0 0 0</pose>
+      <static>false</static>
+      <link name="link">
+        <inertial>
+          <mass>0.15</mass>
+          <inertia>
+            <ixx>0.000016</ixx><iyy>0.000016</iyy><izz>0.000016</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="col">
+          <geometry>
+            <box><size>0.08 0.08 0.08</size></box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode><mu>0.8</mu><mu2>0.8</mu2></ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box><size>0.08 0.08 0.08</size></box>
+          </geometry>
+          <material>
+            <ambient>0.9 0.05 0.05 1</ambient>
+            <diffuse>0.9 0.05 0.05 1</diffuse>
+            <specular>0.3 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- AJOUT : zone BLEUE de dépôt (derrière le robot) -->
+    <model name="blue_zone">
+      <pose>-0.60 0.20 0.010 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <box><size>0.30 0.30 0.02</size></box>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <box><size>0.30 0.30 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>0.05 0.15 0.95 1</ambient>
+            <diffuse>0.05 0.15 0.95 1</diffuse>
+            <specular>0.2 0.2 0.5 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- AJOUT : marqueur vert position de départ du robot -->
+    <model name="start_marker">
+      <pose>0 0 0.003 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <cylinder><radius>0.12</radius><length>0.005</length></cylinder>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <cylinder><radius>0.12</radius><length>0.005</length></cylinder>
+          </geometry>
+          <material>
+            <ambient>0.1 0.85 0.1 1</ambient>
+            <diffuse>0.1 0.85 0.1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- AJOUT : murs invisibles pour garder la boîte dans l'arène -->
+    <model name="wall_north">
+      <pose>0 2.0 0.25 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>4.0 0.05 0.5</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="wall_south">
+      <pose>0 -2.0 0.25 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>4.0 0.05 0.5</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="wall_east">
+      <pose>2.0 0 0.25 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.05 4.0 0.5</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="wall_west">
+      <pose>-2.0 0 0.25 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry><box><size>0.05 4.0 0.5</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>

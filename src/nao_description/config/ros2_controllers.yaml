@@ -1,0 +1,82 @@
+# ============================================================
+#  nao_description/config/ros2_controllers.yaml — VERSION FINALE
+#  Note : pas de gains PID, inutiles en interface position.
+# ============================================================
+controller_manager:
+  ros__parameters:
+    update_rate: 500
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    locomotion_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+    upper_body_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+joint_state_broadcaster:
+  ros__parameters: {}
+
+# ── Jambes (12 joints) ───────────────────────────────────────
+locomotion_controller:
+  ros__parameters:
+    joints:
+      - LHipYawPitch
+      - LHipRoll
+      - LHipPitch
+      - LKneePitch
+      - l_ankle_pitch_joint
+      - LAnkleRoll
+      - RHipYawPitch
+      - RHipRoll
+      - RHipPitch
+      - RKneePitch
+      - r_ankle_pitch_joint
+      - RAnkleRoll
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+    state_publish_rate: 100.0
+    action_monitor_rate: 50.0
+    allow_partial_joints_goal: false
+    allow_nonzero_velocity_at_trajectory_end: true
+    constraints:
+      goal_time: 0.5
+      stopped_velocity_tolerance: 0.02
+      LHipYawPitch:        { trajectory: 0.10, goal: 0.05 }
+      LHipRoll:            { trajectory: 0.10, goal: 0.05 }
+      LHipPitch:           { trajectory: 0.10, goal: 0.05 }
+      LKneePitch:          { trajectory: 0.10, goal: 0.05 }
+      l_ankle_pitch_joint: { trajectory: 0.10, goal: 0.05 }
+      LAnkleRoll:          { trajectory: 0.10, goal: 0.05 }
+      RHipYawPitch:        { trajectory: 0.10, goal: 0.05 }
+      RHipRoll:            { trajectory: 0.10, goal: 0.05 }
+      RHipPitch:           { trajectory: 0.10, goal: 0.05 }
+      RKneePitch:          { trajectory: 0.10, goal: 0.05 }
+      r_ankle_pitch_joint: { trajectory: 0.10, goal: 0.05 }
+      RAnkleRoll:          { trajectory: 0.10, goal: 0.05 }
+
+# ── Bras + Tête (14 joints) ──────────────────────────────────
+upper_body_controller:
+  ros__parameters:
+    joints:
+      - HeadYaw
+      - HeadPitch
+      - LShoulderPitch
+      - LShoulderRoll
+      - LElbowYaw
+      - LElbowRoll
+      - LWristYaw
+      - LHand
+      - RShoulderPitch
+      - RShoulderRoll
+      - RElbowYaw
+      - RElbowRoll
+      - RWristYaw
+      - RHand
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+    state_publish_rate: 100.0
+    action_monitor_rate: 50.0
+    allow_partial_joints_goal: true
+    allow_nonzero_velocity_at_trajectory_end: true
+    constraints:
+      goal_time: 0.5
+      stopped_velocity_tolerance: 0.02
